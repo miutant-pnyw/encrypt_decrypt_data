@@ -144,7 +144,7 @@ export class AppController {
 			message: {
 				type: 'array', 
 				items: { type: 'string' }, 
-				example: ['data1 is required', 'data1 is required']
+				example: ['data1 is required', 'data2 is required']
 			},
 			error: { type: 'string', example: 'Bad Request' },
 		},

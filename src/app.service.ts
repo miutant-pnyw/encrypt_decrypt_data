@@ -22,11 +22,17 @@ export class AppService {
 
 	encryptAES(payload: string, key: Buffer): string {
 		const iv = crypto.randomBytes(12); // 12-byte IV for GCM
+		// Create the AES-256-GCM cipher by AES key and IV
 		const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
 
+		// Encrypt payload
 		const encrypted = Buffer.concat([cipher.update(payload, 'utf8'), cipher.final()]);
+
+		// In case encrypt by GCM, create auth tag to verify when decrypt that data is not modified
 		const tag = cipher.getAuthTag();
 
+		// Combine and convert to base64
+		// IV (12 bytes), auth tag (16 bytes), cipher text (N bytes)
 		return Buffer.concat([iv, tag, encrypted]).toString('base64');
 	}
 
@@ -53,6 +59,7 @@ export class AppService {
 
 		return crypto.publicDecrypt(PUBLIC_KEY, encryptedKey);
 	}
+
 	decryptAES(encryptedBase64: string, key: Buffer): string {
 		const buffer = Buffer.from(encryptedBase64, 'base64');
 
@@ -60,9 +67,13 @@ export class AppService {
 		const tag = buffer.slice(12, 28);    // 16-byte auth tag
 		const encrypted = buffer.slice(28);  // ciphertext
 
+		// Create AES-256-GCM decipher from AES key and iv
 		const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+
+		// Verify that data is not modified
 		decipher.setAuthTag(tag);
 
+		// Convert binary to UTF-8
 		return decipher.update(encrypted, undefined, 'utf8') + decipher.final('utf8');
 	}
 
