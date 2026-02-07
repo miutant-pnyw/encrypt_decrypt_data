@@ -45,14 +45,16 @@ describe('AppController', () => {
 		});
 
 		it('should return success response when encrypt payload successfully', () => {
-			getEncryptData.mockReturnValue('encrypted-value');
+			const data1 = 'encryptedPayloadWithAESKey'
+			const data2 = 'encryptedAESWithPrivateKey'
+			getEncryptData.mockReturnValue({ data1, data2 });
 			const result = appController.getEncryptData({ payload: 'hello' });
 
 			expect(appService.getEncryptData).toHaveBeenCalledWith('hello');
 			expect(result).toEqual({
 				successful: true,
 				error_code: '',
-				data: 'encrypted-value',
+				data: { data1, data2 },
 			});
 		});
 
@@ -81,7 +83,7 @@ describe('AppController', () => {
 		});
 
 		it('should return success response when decrypt payload successfully', () => {
-			getDecryptData.mockReturnValue('plain-text');
+			getDecryptData.mockReturnValue('hello');
 			const data1 = 'encryptedPayloadWithAESKey'
 			const data2 = 'encryptedAESWithPrivateKey'
 			const result = appController.getDecryptData({ data1, data2 });
@@ -90,7 +92,7 @@ describe('AppController', () => {
 			expect(result).toEqual({
 				successful: true,
 				error_code: '',
-				data: 'plain-text',
+				data: 'hello',
 			});
 		});
 
